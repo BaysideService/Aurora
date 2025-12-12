@@ -31,7 +31,14 @@ class DataFusionBus:
 
         quote = self.clients.alpha_vantage.get_quote(symbol)
         news = self.clients.benzinga.get_news(symbol, limit=10)
-        fundamentals = self.clients.sec_edgar.get_company_facts(symbol)
+        try:
+            fundamentals = self.clients.sec_edgar.get_company_facts(symbol)
+        except ValueError:
+            logger.warning(
+                "SEC EDGAR fundamentals require a CIK; skipping fundamentals for %s",
+                symbol,
+            )
+            fundamentals = {}
 
         return TickerSnapshot(
             symbol=symbol,
