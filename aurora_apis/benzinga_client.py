@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List
 
-import requests
+from aurora_apis.http_client import http_get
 
 
 class BenzingaClient:
@@ -29,6 +29,4 @@ class BenzingaClient:
             "pageSize": limit,
         }
         url = f"{self.BASE_URL}/news"
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        return response.json()
+        return http_get(url, params=params)

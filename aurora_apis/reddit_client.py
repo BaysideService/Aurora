@@ -3,8 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict, List
 
-import requests
-from requests.auth import HTTPBasicAuth
+from aurora_apis.http_client import http_get, http_post
 
 
 class RedditClient:
@@ -39,14 +38,15 @@ class RedditClient:
         if not (self.client_id and self.client_secret and self.user_agent):
             raise RuntimeError("Reddit credentials are not fully configured")
 
-        auth = HTTPBasicAuth(self.client_id, self.client_secret)
         data = {"grant_type": "client_credentials"}
         headers = {"User-Agent": self.user_agent}
-        response = requests.post(
-            self.TOKEN_URL, auth=auth, data=data, headers=headers, timeout=10
+        payload = http_post(
+            self.TOKEN_URL,
+            data=data,
+            headers=headers,
+            auth_basic=(self.client_id, self.client_secret),
         )
-        response.raise_for_status()
-        token = response.json()["access_token"]
+        token = payload["access_token"]
         self._access_token = token
         return token
 
@@ -58,8 +58,6 @@ class RedditClient:
         }
         params = {"q": query, "limit": limit, "sort": "new", "restrict_sr": True}
         url = f"{self.BASE_URL}/r/{subreddit}/search"
-        response = requests.get(url, headers=headers, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
+        data = http_get(url, headers=headers, params=params)
         children = data.get("data", {}).get("children", [])
         return [c.get("data", {}) for c in children]

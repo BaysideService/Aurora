@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict
 
-import requests
+from aurora_apis.http_client import http_get
 
 
 class AlphaVantageClient:
@@ -27,7 +27,5 @@ class AlphaVantageClient:
             "symbol": symbol,
             "apikey": self.api_key,
         }
-        response = requests.get(self.BASE_URL, params=params, timeout=10)
-        response.raise_for_status()
-        data = response.json()
+        data = http_get(self.BASE_URL, params=params)
         return data.get("Global Quote", data)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict
 
-import requests
+from aurora_apis.http_client import http_get
 
 
 class FREDClient:
@@ -24,9 +24,7 @@ class FREDClient:
         params["api_key"] = self.api_key
         params["file_type"] = "json"
         url = f"{self.BASE_URL}{path}"
-        response = requests.get(url, params=params, timeout=10)
-        response.raise_for_status()
-        return response.json()
+        return http_get(url, params=params)
 
     def get_series(self, series_id: str) -> Dict[str, Any]:
         return self._get("/series/observations", {"series_id": series_id})

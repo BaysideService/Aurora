@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict
 
-import requests
+from aurora_apis.http_client import http_get
 
 
 class SECEdgarClient:
@@ -37,6 +37,4 @@ class SECEdgarClient:
             raise ValueError("get_company_facts currently expects a numeric CIK")
 
         url = self.COMPANY_FACTS_URL.format(cik=cik)
-        response = requests.get(url, headers=self._headers(), timeout=10)
-        response.raise_for_status()
-        return response.json()
+        return http_get(url, headers=self._headers())
