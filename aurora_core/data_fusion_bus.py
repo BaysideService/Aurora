@@ -31,7 +31,8 @@ class DataFusionBus:
 
         quote = self.clients.alpha_vantage.get_quote(symbol)
         news = self.clients.benzinga.get_news(symbol, limit=10)
-        fundamentals = self.clients.sec_edgar.get_company_facts(symbol)
+        cik = self.clients.sec_edgar.resolve_cik(symbol)
+        fundamentals = self.clients.sec_edgar.get_company_facts(cik)
 
         return TickerSnapshot(
             symbol=symbol,
